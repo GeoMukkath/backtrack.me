@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const User = mongoose.model("User");
+const jwt = require("jsonwebtoken");
 
 const router = express.Router();
 
@@ -10,9 +11,10 @@ router.post("/signup", async (req, res) => {
   try {
     const user = new User({ email, password });
     await user.save();
-    res.send("Post request made");
+    const token = jwt.sign({ userId: user._id }, "BACKTRACK_SECRET_KEY");
+    res.send({ token });
   } catch (err) {
-    return res.send(err.message);
+    return res.status(422).send(err.message);
   }
 });
 
